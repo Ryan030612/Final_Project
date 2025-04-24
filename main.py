@@ -4,33 +4,18 @@ from sklearn.preprocessing import MinMaxScaler
 import scipy.io as scio
 import time
 from mdpc_original import mdpc_plus
-from umap import UMAP
-from sklearn.metrics import silhouette_score
-from sklearn.cluster import KMeans
-from tqdm import tqdm
 from mdpc_umap import mdpc_plus_umap
-
-
-import os
-import numpy as np
-from sklearn.preprocessing import MinMaxScaler
-import scipy.io as scio
-from sklearn.metrics import adjusted_mutual_info_score, adjusted_rand_score
-from scipy.optimize import linear_sum_assignment
-import os
 os.environ['OMP_NESTED'] = 'FALSE'
 from evaluation import compute_score
 import sys
 import warnings
-from umap import UMAP
-import os
+
 os.environ["OMP_NESTED"] = "FALSE"
 os.environ["OMP_DISPLAY_ENV"] = "FALSE"
 os.environ["OMP_WARNINGS"] = "FALSE"
 # 过滤特定警告
 warnings.filterwarnings("ignore", 
                        message="n_jobs value -1 overridden to 1 by setting random_state. Use no seed for parallelism.")
-
 
 def process_dataset(mat_path, k=None, output_file='results.txt'):
     """处理单个数据集的函数(已添加完整指标输出)"""
@@ -95,15 +80,13 @@ def batch_process_datasets(folder_path, output_file='results.txt'):
     with open(output_file, 'w') as f:
         f.write("=== 聚类实验输出结果 ===\n")
     
-    for filename in sorted(os.listdir(folder_path)):
+    for filename in sorted(os.listdir(folder_path))[137:]:
         if filename.endswith('.mat'):
             filepath = os.path.join(folder_path, filename)
             process_dataset(filepath, k=None, output_file=output_file)
             
-                
-
 if __name__ == "__main__":
     datasets_folder = './real_all'
-    output_file = 'clustering_results.txt'  # 输出文件名
+    output_file = 'clustering_results1.txt'  # 输出文件名
     batch_process_datasets(datasets_folder, output_file)
     print(f"所有结果已保存到 {output_file}")
