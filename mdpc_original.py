@@ -2,13 +2,12 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from scipy.sparse.csgraph import dijkstra
 from scipy.spatial import distance
-import matplotlib.pyplot as plt
 import time
 from scipy.io import loadmat
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import adjusted_mutual_info_score, adjusted_rand_score, fowlkes_mallows_score
-from sklearn.metrics import silhouette_score
+from evaluation import compute_score
+import scipy.io as scio
 
+from sklearn.preprocessing import MinMaxScaler
 def mdpc_plus(data, k, num_cluster):
     # Parameters
     n, dim = data.shape
@@ -169,30 +168,23 @@ def mdpc_plus(data, k, num_cluster):
     runtime = time1 + time2
     
     return CL, centers, runtime
-import scipy.io as scio
-import os
-import numpy as np
-from sklearn.preprocessing import MinMaxScaler
-import scipy.io as scio
-import time
-from mdpc_original import mdpc_plus 
-# if __name__=="__main__":
-    # data1 = scio.loadmat(r"real_all/iris.mat")
-    # data_keys = list(data1.keys())
-    # data = data1[data_keys[-2]].astype(np.float32)
-    # y_true = np.ravel(data1[data_keys[-1]])
-    # n,d=data.shape
 
-    # # 数据预处理
-    # scaler = MinMaxScaler(feature_range=(0, 1))
-    # data = scaler.fit_transform(data)
-    # n_clusters = len(np.unique(y_true))
+if __name__=="__main__":
+    data1 = scio.loadmat(r"real_all/waveform.mat")
+    data_keys = list(data1.keys())
+    data = data1[data_keys[-2]].astype(np.float32)
+    y_true = np.ravel(data1[data_keys[-1]])
+    n,d=data.shape
+
+    # 数据预处理
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    data = scaler.fit_transform(data)
+    n_clusters = len(np.unique(y_true))
 
 
-    # labels, centers, runtime = mdpc_plus(data, k=None, num_cluster=n_clusters)
+    labels, centers, runtime = mdpc_plus(data, k=None, num_cluster=n_clusters)
 
-    # # 计算评估指标
-    # from sklearn.metrics import adjusted_mutual_info_score
-    # ami = adjusted_mutual_info_score(y_true, labels)
+    ARI, NMI, ACC = compute_score(labels, y_true)  # score
+    
+    print('ARI: {a:.2f}\nNMI: {b:.2f}\nACC: {c:.2f}'.format(a=ARI, b=NMI, c=ACC))
 
-    # print(ami)
